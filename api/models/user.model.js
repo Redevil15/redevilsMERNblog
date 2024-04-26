@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  profilePictureL: {
+    type: String,
+    default: "https://cdn.pixabay.com/photo/2017/07/11/14/10/happy-dog-2493688_1280.jpg",
+  },
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
