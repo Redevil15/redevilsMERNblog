@@ -37,7 +37,7 @@ export default function DashProfile() {
           allow read;
           allow write: if 
           request.resource.size < 2 * 1024 * 1024 &&
-          request.resource.contentType.matches('image/*')
+          request.resource.contentType.matches('image/.*')
         }
       }
     } */
