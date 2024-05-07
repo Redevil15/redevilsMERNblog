@@ -5,27 +5,37 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { updateStart, updateSuccess, updateFail } from '../redux/user/userSlice';
+import { useDispatch } from 'react-redux';
 
 export default function DashProfile() {
+  const dispatch = useDispatch();
   const { currentUser } = useSelector(state => state.user)
   const [imageFile, setImageFile] = useState(null)
   const [imageFileUrl, setImageFileUrl] = useState(null)
   const filePickerReference = useRef();
   const [imageFileUploadingProgress, setImageFileUploadingProgress] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
+  const [formData, setFormData] = useState({});
+  const [imageFileUploading, setImageFileUploading] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(null);
+  const [updateUserError, setUpdateUserError] = useState(null);
 
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if(file) {
-      if (file.size >= 2048000 || !file.type.startsWith('image/')) {
-        setImageFileUploadError('File must be an image and less than 2MB');
-        return;
-      }
       setImageFile(file);
       setImageFileUrl(URL.createObjectURL(file));
     }
   };
+
+  useEffect(() => {
+    if(imageFile) {
+      uploadImage();
+    }
+  }, [imageFile]);
+
   
   const uploadImage = async () => {
     // Craft rules based on data in your Firestore database
@@ -41,7 +51,8 @@ export default function DashProfile() {
         }
       }
     } */
-
+    setImageFileUploading(true);
+    setImageFileUploadError(null)
     const storage = getStorage(app);
     const fileName = new Date().getTime() + imageFile.name;
     const storageRef = ref(storage, fileName);
@@ -53,34 +64,76 @@ export default function DashProfile() {
         setImageFileUploadingProgress(progress.toFixed(0));
       },
       (error) => {
-        setImageFileUploadingProgress(null)
-        setImageFileUploadError(`Upload error: ${error.message}`);
+        setImageFileUploadError(
+          'Could not upload image (File must be less than 2MB)'
+        );
+        setImageFileUploadingProgress(null);
         setImageFile(null);
         setImageFileUrl(null);
+        setImageFileUploading(false);
       },
       () => {
-        setImageFileUploadError(null)
-        getDownloadURL(uploadTask.snapshot.ref).then((
-          downloadURL
-        ) => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setImageFileUrl(downloadURL);
+          setFormData({...formData, profilePictureL: downloadURL})
+          setImageFileUploading(false);
         })
       }
     )
-  }
+  };
 
-  useEffect(() => {
-    if(imageFile) {
-      uploadImage();
+  const handleChange = (e) => {
+    setFormData({...formData, [e.target.id]: e.target.value});
+  };
+
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setUpdateSuccess(null);
+    setUpdateUserError(null);
+    if (Object.keys(formData).length === 0) {
+      setUpdateUserError('No changes made')
+      return;
     }
-  }, [imageFile])
+
+    if(imageFileUploading) {
+      setUpdateUserError('Please wait for image to upload')
+      return;
+    }
+    // Update user profile
+    try {
+      dispatch(updateStart());
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      if(!res.ok) {
+        dispatch(updateFail(data.message));
+        setUpdateUserError(data.message)
+      } else {
+        dispatch(updateSuccess(data));
+        setUpdateSuccess("User's profile updated successfully")
+      }
+    } catch (error) {
+      dispatch(updateFail(error.message))
+      setUpdateUserError(error.message)
+    }
+  }
 
   return (
     <div className='max-w-lg mx-auto p-3 w-full'>
       <h1 className='my-7 text-center font-semibold text-3xl'>
         Profile
       </h1>
-      <form className='flex flex-col gap-4'>
+      <form 
+        onSubmit={handleSubmit}
+        className='flex flex-col gap-4'
+      >
         <input 
           type="file" 
           accept="image/*"  
@@ -127,17 +180,20 @@ export default function DashProfile() {
           id="username"
           placeholder='username'
           defaultValue={currentUser.username}
+          onChange={handleChange}
         />      
         <TextInput
           type='email'
           id="email"
           placeholder='email'
           defaultValue={currentUser.email}
+          onChange={handleChange}
         />      
         <TextInput
           type='password'
           id="password"
           placeholder='password'
+          onChange={handleChange}
         />
         <Button
           type='submit'
@@ -147,6 +203,11 @@ export default function DashProfile() {
           Update  
         </Button>      
       </form>
+      {updateSuccess  && (
+        <Alert color='success' className='mt-5'>
+          {updateSuccess}
+        </Alert>
+      )}
       <div className='text-red-500 flex justify-between mt-5'>
         <span className='cursor-pointer'>
           Delete Account
