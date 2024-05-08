@@ -14,10 +14,10 @@ import {
   updateStart,
   updateSuccess,
   updateFailure,
-  /* deleteUserStart,
+  deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
-  signoutSuccess, */
+  signoutSuccess,
 } from '../redux/user/userSlice';
 import { useDispatch } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
