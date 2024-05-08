@@ -48,6 +48,7 @@ export default function DashProfile() {
       uploadImage();
     }
   }, [imageFile]);
+  console.log(currentUser)
 
   const uploadImage = async () => {
     // service firebase.storage {
