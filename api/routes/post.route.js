@@ -1,5 +1,5 @@
 import express from 'express';
-import { create, getposts } from '../controllers/post.controller.js';
+import { create, deletepost, getposts } from '../controllers/post.controller.js';
 import { verifyUser } from '../utils/verifyUser.js';
 
 const router = express.Router();
