@@ -25,7 +25,23 @@ export default function DashPost() {
     if(currentUser.isAdmin) {
       fetchPosts()
     }
-  }, [currentUser._id])
+  }, [currentUser._id]);
+
+  const handleShowMore = async () => {
+    const startIndex = userPosts.length;
+    try {
+      const res = await fetch(`/api/post/getPosts?userId=${currentUser._id}&startIndex=${startIndex}`);
+      const data = await res.json();
+      if(res.ok) {
+        setUserPosts([...userPosts, ...data.posts]);
+        if(data.posts.length < 9) {
+          setShowMore(false);
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div
