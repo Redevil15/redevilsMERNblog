@@ -1,4 +1,4 @@
-import { Table } from 'flowbite-react'
+import { Button, Table } from 'flowbite-react'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 export default function DashPost() {
   const { currentUser } = useSelector((state) => state.user)
   const [userPosts, setUserPosts] = useState([])
+  const [showMore, setShowMore] = useState(true)
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -13,6 +14,9 @@ export default function DashPost() {
         const data = await res.json()
         if(res.ok) {
           setUserPosts(data.posts)
+          if(data.length < 9) {
+            setShowMore(false)
+          }
         }
       } catch (error) {
         console.log(error)
@@ -100,6 +104,14 @@ export default function DashPost() {
               </Table.Body>
             ))}
           </Table> 
+          {showMore && (
+            <button
+              className='w-full text-teal-500 self-center text-sm py-7'
+              onClick={handleShowMore}
+            >
+              Show More
+            </button>
+          )}
         </>
       ) : (
         <div>
