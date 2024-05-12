@@ -80,6 +80,7 @@ export const deletepost = async (req, res, next) => {
   }
 };
 
+// Funcion para actualizar un post ya existente
 export const updatepost = async (req, res, next) => {
   if(!req.user.isAdmin || req.user.id !== req.params.userId) {
     return next(errorHandler(403, "You're not allowed to update a post"))
@@ -99,4 +100,4 @@ export const updatepost = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
-}
+};
