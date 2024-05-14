@@ -49,8 +49,10 @@ export const updateUser = async (req, res, next) => {
 };
 
 export const deleteUser = async (req, res, next) => {
+  console.log(req.user.id)
+  console.log(req.params.userId)
   if(req.user.id !== req.params.userId) {
-    return next(errorHandler(403, "You're not allowe to delete this user"))
+    return next(errorHandler(403, "You're not allowed to delete this user"))
   }
 
   try {

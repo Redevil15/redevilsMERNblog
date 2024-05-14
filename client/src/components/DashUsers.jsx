@@ -52,7 +52,7 @@ export default function DashUsers() {
     console.log(userToDelete)
     setShowModal(false);
     try {
-      const res = await fetch(`/api/user/deleteuser/${userToDelete}/${currentUser._id}`, {
+      const res = await fetch(`/api/user/delete/${userToDelete}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -101,40 +101,31 @@ export default function DashUsers() {
             {users.map((user) => (
               <Table.Body
                 className='divide-y'
+                key={user._id}
               >
                 <Table.Row
                   className='bg-white dark:border-gray-700 dark:bg-gray-800'
                 >
                   <Table.Cell>{new Date(user.createdAt).toLocaleDateString()}</Table.Cell>
                   <Table.Cell>
-                    <Link
-                      //to={`/user/${_}`}
-                    >
-                      <img
-                        src={user.profilePictureL}
-                        alt="user profile picture"
-                        className='w-20 h-10 object-cover bg-gray-500 rounded'
-                      />
-                    </Link>
+                    <img
+                      src={user.profilePictureL}
+                      alt="user profile picture"
+                      className='w-20 h-10 object-cover bg-gray-500 rounded-full'
+                    />
                   </Table.Cell>
-                  <Table.Cell>
-                    <Link
-                      //to={`/post/${post.slug}`}
-                      className='font-md text-gray-900 dark:text-white'
-                    >
+                  <Table.Cell>                  
                       {user.username}
-                    </Link>
                   </Table.Cell>
                   <Table.Cell>{user.email}</Table.Cell>
                   <Table.Cell>
                     {user.isAdmin ? (
-
                       <FaCheck
-                        color="green"
+                        className='text-green-500'
                       />
                     ): (
                       <FaTimes
-                        color="red"
+                      className='text-red-500'
                       />
                     )}
                   </Table.Cell>
