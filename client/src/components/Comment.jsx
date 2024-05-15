@@ -23,25 +23,27 @@ export default function Comment({
   }, [comment])
 
   return (
-    <div className=''>
-      <div className='flex items-center gap-2'>
+    <div className='flex p-4 border-b dark:border-gray600 text-sm'>
+      <div className='flex-shrink-0 mr-3'>
         <img
           src={user.profilePictureL}
           alt={user.username}
           className='w-10 h-10 rounded-full bg-gray-200'
         />
       </div>
-      <div className=''>
-        <div className=''>
+      <div className='flex-1'>
+        <div className='flex items-center mb-1'>
           <span className='font-bold mr-1 text-xs truncate'>
             {user ? `@${user.username}` : 'anonymous user'}
           </span>
-          <span>
+          <span className='text-gray-500 text-xs'>
             {moment(comment.createdAt).fromNow()}
           </span>
         </div>
+        <p className='text-gray-500 pb-2'>
+          {comment.content}
+        </p>
       </div>
-      <p className='text-gray-100'>{comment.content}</p>
     </div>
   )
 }
