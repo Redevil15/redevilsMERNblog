@@ -1,3 +1,4 @@
+import Comment from "../models/comment.model.js";
 import { errorHandler } from "../utils/error.js";
 
 export const createComment = async (req, res, next) => {

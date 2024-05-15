@@ -21,7 +21,7 @@ const commentSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-}, { timestamps: tru});
+}, { timestamps: true});
 
 const Comment = mongoose.model('Comment', commentSchema);
 export default Comment;
