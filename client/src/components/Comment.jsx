@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import moment  from 'moment'
 import { FaThumbsUp } from 'react-icons/fa'
+import { useSelector } from 'react-redux'
 
 export default function Comment({
   comment,
-  onLike
+  onLike,
+  onDelete,
+  onEdit
 }) {
   const [user, setUser] = useState({});
+  const { currentUser } = useSelector((state) => state.user)
 
   useEffect(() => {
     const getuser = async () => {
@@ -22,6 +26,10 @@ export default function Comment({
     }
     getuser();
   }, [comment])
+
+  const handleEdit = () => {
+    
+  }
 
   return (
     <div className='flex p-4 border-b dark:border-gray600 text-sm'>
@@ -46,12 +54,39 @@ export default function Comment({
         </p>
         <div>
           <button
-            className='text-gray-400 hover:text-blue-500'
+            className={`text-gray-400 hover:text-blue-500 ${
+              currentUser &&
+              comment.likes.includes(currentUser._id) &&
+              '!text-blue-500'
+            }`}
             type="button"
             onClick={() => onLike(comment._id)}
           >
             <FaThumbsUp className='text-sm'/>
           </button>
+          <p
+            className='text-gray-400'
+          >
+            {comment.numberOfLikes > 0 && comment.numberOfLikes + ' ' + (comment.numberOfLikes === 1 ? 'like' : 'likes')}
+          </p>
+          {currentUser && (currentUser._id === comment.userId || currentUser.isAdmin) && (
+            <>
+              <button
+                className='text-gray-400 hover:text-red-500'
+                type="button"
+                onClick={() => onDelete(comment._id)}
+              >
+                Delete
+              </button>
+              <button
+                className='text-gray-400 hover:text-blue-500'
+                type="button"
+                onClick={handleEdit}
+              >
+                Edit
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>
