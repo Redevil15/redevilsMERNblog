@@ -157,6 +157,7 @@ export default function CommentSection({
               key={comment._id}
               comment={comment}
               onLike={handleLike}
+              
             />
           ))}
         </>
